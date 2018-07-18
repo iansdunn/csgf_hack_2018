@@ -1,16 +1,13 @@
 /*
 Sequential GPP code that uses std:complex<double> data type. 
 */
-
-
 #include <iostream>
 #include <cstdlib>
 #include <memory>
 #include <iomanip>
 #include <cmath>
 #include <complex>
-#include <chrono>
-#include <vector>
+#include <sys/time.h>
 
 using namespace std;
 
@@ -136,10 +133,8 @@ void noflagOCC_solver(double wxt, std::complex<double> *wtilde_array, int my_igp
     double limitone = 1.0/(to1*4.0);
     double limittwo = pow(0.5,2);
     std::complex<double> mygpvar1 = std::conj(aqsmtemp[n1*ncouls+igp]);
-    double real_tot = 0.0, imag_tot = 0.0;
-    std::vector<double> reals(ncouls), imags(ncouls);  
- 
-    #pragma omp parallel for
+    std::complex<double> scht_loc(0.00, 0.00);
+    
     for(int ig = 0; ig<ncouls; ++ig)
     {
         std::complex<double> wdiff = wxt - wtilde_array[my_igp*ncouls+ig];
@@ -148,24 +143,10 @@ void noflagOCC_solver(double wxt, std::complex<double> *wtilde_array, int my_igp
 
         std::complex<double> delw = wtilde_array[my_igp*ncouls+ig] * conj(wdiff) *rden; //*rden
         double delwr = real(delw * conj(delw));
-            
-        std::complex<double> tmp = mygpvar1 * aqsntemp[n1*ncouls+ig] * delw * I_eps_array[my_igp*ncouls+ig] ;
-	reals[ig] = tmp.real();
-	imags[ig] = tmp.imag();
+
+        scht_loc += mygpvar1 * aqsntemp[n1*ncouls+ig] * delw * I_eps_array[my_igp*ncouls+ig] ;
     }
 
-    #pragma omp parallel for reduction(+:real_tot)
-    for(int ig = 0; ig < ncouls; ++ig)
-    {
-        real_tot += reals[ig];
-    }
-    #pragma omp parallel for reduction(+:imag_tot)
-    for(int ig = 0; ig < ncouls; ++ig)
-    {
-        imag_tot += imags[ig];
-    }
-
-    std::complex<double> scht_loc(real_tot, imag_tot);
     scht = scht_loc;
 }
 
@@ -200,6 +181,7 @@ int main(int argc, char** argv)
     const double occ=1.0;
 
     //Printing out the params passed.
+    std::cout << "**************************** Sequential GPP code ************************* " << std::endl;
     std::cout << "number_bands = " << number_bands \
         << "\t nvband = " << nvband \
         << "\t ncouls = " << ncouls \
@@ -282,7 +264,9 @@ int main(int argc, char** argv)
     }
 
     //Start the timer before the work begins.
-    auto startTimer = std::chrono::high_resolution_clock::now();
+    //Start the timer before the work begins.
+    timeval startTimer, endTimer;
+    gettimeofday(&startTimer, NULL);
 
 //The main work starts here
     for(int n1 = 0; n1<number_bands; ++n1) 
@@ -335,13 +319,15 @@ int main(int argc, char** argv)
         }
     }
     //Time Taken
-    std::chrono::duration<double> elapsedTimer = std::chrono::high_resolution_clock::now() - startTimer;
+    gettimeofday(&endTimer, NULL);
+    double elapsedTimer = (endTimer.tv_sec - startTimer.tv_sec) +1e-6*(endTimer.tv_usec - startTimer.tv_usec);
+
 
 
     for(int iw=nstart; iw<nend; ++iw)
         cout << "achtemp[" << iw << "] = " << std::setprecision(15) << achtemp[iw] << endl;
 
-    cout << "********** Time Taken **********= " << elapsedTimer.count() << " secs" << endl;
+    cout << "********** Time Taken **********= " << elapsedTimer << " secs" << endl;
 
     //Free the allocated memory
     free(acht_n1_loc);

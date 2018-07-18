@@ -4,8 +4,8 @@ VER=OpenMP
 #VER=OpenACC
 #VER=ComplexClass
 
-CXXFLAGS=
-LINKFLAGS=
+CXXFLAGS=-std=c++11
+LINKFLAGS=-std=c++11
 
 #Sequential version
 ifeq ($(VER), SEQ)
@@ -39,7 +39,7 @@ ifeq ($(VER), ComplexClass)
     SRC = gppComplex.cpp 
 endif
 
-CXX = scorep-CC
+CXX = g++ # scorep-CC
 LINK = ${CXX}
 CXXFLAGS+= -O3 -g
 
