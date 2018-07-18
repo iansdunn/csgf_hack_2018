@@ -25,6 +25,8 @@ endif
 ifeq ($(VER), MPIOpenMP)
     EXE = gppMPIOpenMP.ex
     SRC = gppMPIOpenMP3.cpp 
+    CXXFLAGS += -fopenmp
+    LINKFLAGS += -fopenmp
 endif
 
 #Complex class + gpp version
@@ -40,6 +42,7 @@ ifeq ($(VER), ComplexClass)
 endif
 
 CXX = CC
+CXX = CC # scorep-CC
 LINK = ${CXX}
 CXXFLAGS+= -O3 -g
 
