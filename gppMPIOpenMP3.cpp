@@ -204,17 +204,20 @@ int main(int argc, char** argv)
     const double occ=1.0;
 
     //Printing out the params passed.
-    std::cout << "number_bands = " << number_bands \
-        << "\t nvband = " << nvband \
-        << "\t ncouls = " << ncouls \
-        << "\t nodes_per_group  = " << nodes_per_group \
-        << "\t ngpown = " << ngpown \
-        << "\t nend = " << nend \
-        << "\t nstart = " << nstart \
-        << "\t gamma = " << gamma \
-        << "\t sexcut = " << sexcut \
-        << "\t limitone = " << limitone \
-        << "\t limittwo = " << limittwo << endl;
+    if( ThisTask == 0 )
+    {
+        std::cout << "number_bands = " << number_bands \
+            << "\t nvband = " << nvband \
+            << "\t ncouls = " << ncouls \
+            << "\t nodes_per_group  = " << nodes_per_group \
+            << "\t ngpown = " << ngpown \
+            << "\t nend = " << nend \
+            << "\t nstart = " << nstart \
+            << "\t gamma = " << gamma \
+            << "\t sexcut = " << sexcut \
+            << "\t limitone = " << limitone \
+            << "\t limittwo = " << limittwo << endl;
+    }    
 
     // Memory allocation of input data structures.
     // Two dimensional arrays from theory have been initialized as a single dimension in m*n format for performance.
@@ -242,9 +245,12 @@ int main(int argc, char** argv)
     std::complex<double> *scha = new std::complex<double> [ncouls];
 
     //Printing the size of each of the input data structures.
-    cout << "Size of wtilde_array = " << (ncouls*ngpown*2.0*8) / pow(1024,2) << " Mbytes" << endl;
-    cout << "Size of aqsntemp = " << (ncouls*number_bands*2.0*8) / pow(1024,2) << " Mbytes" << endl;
-    cout << "Size of I_eps_array array = " << (ncouls*ngpown*2.0*8) / pow(1024,2) << " Mbytes" << endl;
+    if( ThisTask == 0 )
+    {
+        cout << "Size of wtilde_array = " << (ncouls*ngpown*2.0*8) / pow(1024,2) << " Mbytes" << endl;
+        cout << "Size of aqsntemp = " << (ncouls*number_bands*2.0*8) / pow(1024,2) << " Mbytes" << endl;
+        cout << "Size of I_eps_array array = " << (ncouls*ngpown*2.0*8) / pow(1024,2) << " Mbytes" << endl;
+    }
 
     //Some expressions declared to be used later in the initialization.
     std::complex<double> expr0( 0.0 , 0.0);
@@ -347,12 +353,13 @@ int main(int argc, char** argv)
     //Time Taken
     std::chrono::duration<double> elapsedTimer = std::chrono::high_resolution_clock::now() - startTimer;
 
-if (ThisTask == 0) {
+if (ThisTask == 0)
+{
     for(int iw=nstart; iw<nend; ++iw)
         cout << "achtemp[" << iw << "] = " << std::setprecision(15) << achtemp_tot[iw] << endl;
+    cout << "********** Time Taken **********= " << elapsedTimer.count() << " secs" << endl;
 }
 
-    cout << "********** Time Taken **********= " << elapsedTimer.count() << " secs" << endl;
 
     //Free the allocated memory
     free(acht_n1_loc);
