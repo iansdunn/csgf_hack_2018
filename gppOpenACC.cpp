@@ -368,6 +368,7 @@ int main(int argc, char** argv)
         }
     }
 
+    #pragma acc data copyin(vcoul[0:ncouls])
     #pragma acc parallel loop
     for(int n1 = nvband; n1<number_bands; ++n1) 
     {

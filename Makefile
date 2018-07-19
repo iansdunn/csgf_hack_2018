@@ -43,8 +43,7 @@ ifeq ($(VER), ComplexClass)
     SRC = gppComplex.cpp 
 endif
 
-CXX = CC
-CXX = CC # scorep-CC
+CXX = pgc++
 LINK = ${CXX}
 CXXFLAGS+= -O3 -g
 
