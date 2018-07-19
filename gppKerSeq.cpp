@@ -1,13 +1,15 @@
 /*
 Sequential GPP code that uses std:complex<double> data type. 
 */
+
+
 #include <iostream>
 #include <cstdlib>
 #include <memory>
 #include <iomanip>
 #include <cmath>
 #include <complex>
-#include <sys/time.h>
+#include <chrono>
 
 using namespace std;
 
@@ -181,7 +183,6 @@ int main(int argc, char** argv)
     const double occ=1.0;
 
     //Printing out the params passed.
-    std::cout << "**************************** Sequential GPP code ************************* " << std::endl;
     std::cout << "number_bands = " << number_bands \
         << "\t nvband = " << nvband \
         << "\t ncouls = " << ncouls \
@@ -264,9 +265,7 @@ int main(int argc, char** argv)
     }
 
     //Start the timer before the work begins.
-    //Start the timer before the work begins.
-    timeval startTimer, endTimer;
-    gettimeofday(&startTimer, NULL);
+    auto startTimer = std::chrono::high_resolution_clock::now();
 
 //The main work starts here
     for(int n1 = 0; n1<number_bands; ++n1) 
@@ -319,15 +318,13 @@ int main(int argc, char** argv)
         }
     }
     //Time Taken
-    gettimeofday(&endTimer, NULL);
-    double elapsedTimer = (endTimer.tv_sec - startTimer.tv_sec) +1e-6*(endTimer.tv_usec - startTimer.tv_usec);
-
+    std::chrono::duration<double> elapsedTimer = std::chrono::high_resolution_clock::now() - startTimer;
 
 
     for(int iw=nstart; iw<nend; ++iw)
         cout << "achtemp[" << iw << "] = " << std::setprecision(15) << achtemp[iw] << endl;
 
-    cout << "********** Time Taken **********= " << elapsedTimer << " secs" << endl;
+    cout << "********** Time Taken **********= " << elapsedTimer.count() << " secs" << endl;
 
     //Free the allocated memory
     free(acht_n1_loc);
