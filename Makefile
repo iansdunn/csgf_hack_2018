@@ -1,7 +1,7 @@
 #VER=SEQ
 #VER=OpenMP
-VER=MPIOpenMP
-#VER=OpenACC
+#VER=MPIOpenMP
+VER=OpenACC
 #VER=ComplexClass
 
 CXXFLAGS=-std=c++11
@@ -33,6 +33,8 @@ endif
 ifeq ($(VER), OpenACC)
     EXE = gppOpenACC.ex
     SRC = gppOpenACC.cpp 
+    CXXFLAGS += -fopenacc
+    LINKFLAGS += -fopenacc
 endif
 
 #Complex class + gpp version
@@ -47,7 +49,7 @@ LINK = ${CXX}
 CXXFLAGS+= -O3 -g
 
 ifeq ($(VER), OpenACC)
-    CXXFLAGS+=-h pragma=acc
+    #CXXFLAGS+= -h pragma=acc
 endif
 
 OBJ = $(SRC:.cpp=.o)
