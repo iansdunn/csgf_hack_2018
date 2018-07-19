@@ -33,8 +33,8 @@ endif
 ifeq ($(VER), OpenACC)
     EXE = gppOpenACC.ex
     SRC = gppOpenACC.cpp 
-    CXXFLAGS += -fopenacc
-    LINKFLAGS += -fopenacc
+#    CXXFLAGS += -fopenacc
+#    LINKFLAGS += -fopenacc
 endif
 
 #Complex class + gpp version
@@ -49,6 +49,8 @@ LINK = ${CXX}
 CXXFLAGS+= -O3 -g
 
 ifeq ($(VER), OpenACC)
+    CXXFLAGS+=-ta=nvidia,cc35,ptxinfo,cuda9.0,pinned -Minfo=accel
+    LINKFLAGS+=-ta=nvidia,cc35,ptxinfo,cuda9.0,pinned -Minfo=accel
     #CXXFLAGS+= -h pragma=acc
 endif
 
